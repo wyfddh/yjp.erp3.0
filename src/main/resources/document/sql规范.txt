@@ -1,0 +1,22 @@
+主键id使用bigint unsigned  ，主键不允许使用自增
+
+所有的表及字段都要有comment，把缺失的都补齐
+
+表结构设计中每张表必须有id、createtime、lastupdatetime字段且定义为not null，
+	Createtime表示行数据插入时间，不论是只插入还是有变更的数据，必须要有此字段用于可能的数据抽取和历史数据删除。建议定义为 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP。
+  Lastupdatetime 记录数据变更时间，主要用于数据抽取及数据迁移和清理。建议定义为 DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP；针对createtime和lastupdatetime字段的更新建议由MySQL数据库维护。
+
+utf8mb4_unicode_ci 都改为 utf8mb4_general_ci，云数据库默认utf8mb4_general_ci
+
+表中字段尽可能设置为NOT NULL属性，业务可以根据需要定义DEFAULT值。
+  建议用0、特殊值或空串代替NULL值
+	varchar(30) not null default '' (中间无空格)
+	时间和数字类型建议给无意义的default值以避免空值
+	
+命名禁止使用MySQL保留关键字。如 name
+在SQL语句编写的时候必须使用反引号（``）来引用这些关键字，使得SQL语句在书写和SHELL脚本中变量的转义变得复杂.
+关键字具体查询 select * from mysql.help_keyword;
+
+索引命名规范
+	普通索引	index	idx_colname		   如idx_bill_id,   id_idx这样的名字可读性太差
+	唯一索引	uniqueIndex	uniq_colname
