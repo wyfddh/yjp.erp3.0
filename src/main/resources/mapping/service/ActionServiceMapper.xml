@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.ActionServiceMapper">
+
+    <insert id="bathInsertActionService" parameterType="com.yjp.erp.model.po.service.ActionService">
+        insert into action_service (action_id, service_id) values
+        <foreach collection="list" index="index" item="item" separator=",">
+          (#{item.actionId},#{item.serviceId})
+        </foreach>
+    </insert>
+
+</mapper>

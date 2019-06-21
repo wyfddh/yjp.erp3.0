@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.ViewParentMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.view.ViewParent">
+        <id property="id" column="id"/>
+        <result property="entityName" column="entity_name"/>
+        <result property="packagePath" column="package_path"/>
+        <result property="title" column="title"/>
+        <result property="moduleId" column="module_id"/>
+        <result property="cache" column="cache"/>
+        <result property="transaction" column="transaction"/>
+    </resultMap>
+
+    <select id="getViewByMap" resultType="java.util.Map" parameterType="java.util.Map">
+        select a.entity_name entityName,a.title displayName,
+        b.class_id classId,b.type_id typeId,b.publish_state status,
+        b.gmt_create createTime,b.gmt_modify lastUpdateTime
+        from view_parent a
+        left join module b on a.module_id = b.id
+        where b.active_state = 1
+        <if test="title != null">
+            and a.title like concat('%',#{title},'%')
+        </if>
+        <if test="status != null">
+            and b.publish_state = #{status}
+        </if>
+        order by b.id desc limit #{startIndex},#{pageSize}
+    </select>
+    <select id="getViewByModuleId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id,entity_name,package_path,title,module_id,cache,transaction
+        from view_parent
+        where module_id = #{moduleId}
+    </select>
+    <select id="getViewParentById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select id,entity_name,package_path,title,module_id,cache,transaction
+        from view_parent
+        where id = #{id}
+    </select>
+    <select id="countViewByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select count(1)
+        from view_parent a
+        left join module b on a.module_id = b.id
+        where b.active_state = 1
+        <if test="title != null">
+            and a.title like concat('%',#{title},'%')
+        </if>
+        <if test="status != null">
+            and b.publish_state = #{status}
+        </if>
+    </select>
+    <select id="getFieldsByEntityName" resultType="java.util.Map" parameterType="java.lang.String">
+        select a.class_id as classId ,a.type_id as typeId
+        from module a
+        left join base_entity b on a.id = b.module_id
+        where b.name = #{entityName}
+        UNION ALL
+        select c.class_id as classId,c.type_id as typeId
+        from module c
+        left join bill d on c.id = d.module_id
+        where d.name = #{entityName}
+    </select>
+    <insert id="insert" parameterType="com.yjp.erp.model.po.view.ViewParent">
+        insert into view_parent (id,entity_name,package_path,module_id,title,cache,transaction)
+        VALUES
+        (
+        #{id},#{entityName},#{packagePath},#{moduleId},#{title},#{cache},#{transaction}
+        )
+    </insert>
+    <update id="update" parameterType="com.yjp.erp.model.po.view.ViewParent">
+        update view_parent set
+        entity_name = #{entityName},
+        package_path = #{packagePath},
+        module_id = #{moduleId},
+        title = #{title},
+        cache = #{cache},
+        transaction = #{transaction}
+        where id = #{id}
+
+    </update>
+
+    <select id="getViewNameByClassIdAndTypeId" parameterType="com.yjp.erp.model.po.bill.Module" resultType="String">
+        select t2.entity_name from module t1 join view_parent t2 on t1.id = t2.module_id
+        where t1.class_id = #{classId} and t1.type_id = #{typeId} and t1.active_state = 1
+    </select>
+
+    <select id="listViews" resultType="map">
+        select t1.class_id classId,t1.type_id typeId,t2.title label,t2.entity_name name,t1.id from module t1 join view_parent t2 on t1.id = t2.module_id
+        where t1.class_id = #{classId} and t1.active_state = 1 and t1.publish_state = 1
+    </select>
+
+</mapper>

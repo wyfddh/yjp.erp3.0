@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.BillEecaMapper">
+
+    <insert id="bathInsertBillEeca" parameterType="com.yjp.erp.model.po.eeca.BillEeca">
+        insert into bill_eeca (id, module_id, event_type, e_trigger, label, e_condition, e_method,eeca_id,other_options) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.moduleId},#{item.eventType},#{item.eTrigger},#{item.label},#{item.eCondition},#{item.eMethod},#{item.eecaId},#{item.otherOptions})
+        </foreach>
+    </insert>
+
+    <resultMap id="billEeca" type="com.yjp.erp.model.po.eeca.BillEeca">
+        <id property="id" column="id"/>
+        <result property="moduleId" column="module_id"/>
+        <result property="eventType" column="event_type"/>
+        <result property="eTrigger" column="e_trigger"/>
+        <result property="label" column="label"/>
+        <result property="eCondition" column="e_condition"/>
+        <result property="eMethod" column="e_method"/>
+    </resultMap>
+
+    <resultMap id="eecaResultMap" type="com.yjp.erp.model.po.eeca.BillEeca">
+        <id property="id" column="id"/>
+        <result property="moduleId" column="module_id"/>
+        <result property="eventType" column="event_type"/>
+        <result property="eTrigger" column="e_trigger"/>
+        <result property="label" column="label"/>
+        <result property="eCondition" column="e_condition"/>
+        <result property="eMethod" column="e_method"/>
+        <result property="eecaId" column="eeca_id"/>
+        <result property="otherOptions" column="other_options"/>
+        <association property="refService" resultMap="billServiceResultMap"/>
+    </resultMap>
+
+    <resultMap id="billServiceResultMap" type="com.yjp.erp.model.po.service.Service">
+        <id property="id" column="serviceId"/>
+        <result property="serviceName" column="serviceName"/>
+        <result property="label" column="serviceLabel"/>
+        <result property="verb" column="verb"/>
+        <result property="noun" column="noun"/>
+        <result property="location" column="location"/>
+        <result property="script" column="script"/>
+        <result property="serviceType" column="service_type"/>
+    </resultMap>
+
+    <select id="getBillEecaById" parameterType="Long" resultMap="billEeca">
+        select * from bill_eeca where id=#{billEecaId}
+    </select>
+
+    <select id="getBillEecaByModuleId" parameterType="Long" resultMap="billEeca">
+        select * from bill_eeca where module_id=#{id}
+    </select>
+
+    <select id="getBillEecaList" parameterType="com.yjp.erp.model.po.bill.Module" resultMap="eecaResultMap">
+    select t2.id, t2.module_id, t2.event_type, t2.e_trigger, t2.label, t2.e_condition, t2.e_method,t2.other_options,t2.eeca_id,
+    t4.id serviceId, t4.name serviceName, t4.label serviceLabel, t4.verb, t4.noun, t4.location, t4.script, t4.service_type
+    from module t1 join bill_eeca t2 on t1.id = t2.module_id
+    left join eeca_service t3 on t3.eeca_id = t2.id
+    left join service t4 on t4.id = t3.service_id
+    where t1.class_id = #{classId} and t1.type_id = #{typeId} and t1.active_state = 1
+  </select>
+
+</mapper>

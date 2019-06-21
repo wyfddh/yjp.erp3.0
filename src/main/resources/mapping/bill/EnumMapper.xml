@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.EnumMapper">
+
+    <select id="listFields" parameterType="com.yjp.erp.model.po.bill.Module" resultType="map">
+        select t3.label, t3.field_name fieldName ,t3.filed_type keyType
+        from module t1 join enum_entity t2 on t1.id = t2.module_id
+        join enum_field t3 on t2.id = t3.enum_id
+        where t1.type_id = #{typeId} and t1.class_id = #{classId} and t1.active_state = 1
+    </select>
+
+    <select id="listEnums" resultType="map">
+        select t1.class_id classId,t1.type_id typeId,t2.label,t2.name,t1.id from module t1 join enum_entity t2 on t1.id = t2.module_id
+        where t1.class_id = #{classId} and t1.active_state = 1 and t1.publish_state = 1
+    </select>
+
+    <select id="getEnumNameByClassIdAndTypeId" resultType="String" parameterType="com.yjp.erp.model.po.bill.Module">
+        select t2.name from module t1 join enum_entity t2 on t1.id = t2.module_id
+        where t1.class_id = #{classId} and t1.type_id = #{typeId} and t1.active_state = 1
+    </select>
+
+</mapper>

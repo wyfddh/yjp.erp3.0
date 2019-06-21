@@ -1,0 +1,24 @@
+def logger = ec.getLogger()
+def parameters = ec.web.parameters
+def originEntityName="${originEntityName}"
+def originDetailEntityName="${originDetailEntityName}"
+def targetEntityName="${targetEntityName}"
+def originEntityValue=ec.entity.find(originEntityName).condition("id",parameters.id).one()
+
+logger.info("回写脚本接受到的数据: " + "originEntityName = " + originEntityName + " originDetailEntityName =" + originDetailEntityName + " targetEntityName = " + targetEntityName)
+logger.info("差选出源实体的值:"+originEntityValue)
+
+def orginEntityDetailValue=ec.entity.find(originDetailEntityName).condition("parentId",parameters.id).list()
+for(def value : orginEntityDetailValue){
+    def targetEntityValue=ec.entity.makeValue(targetEntityName)
+
+//==========================start=============================
+<#list "${fillTargetEntityValueMapping}"?split("/n") as x>
+     ${x?replace("/n","")}
+</#list>
+//==========================end===============================
+
+    targetEntityValue.id=ec.getId()
+    logger.info("打印回写的实体:"+targetEntityValue)
+    targetEntityValue.create()
+}

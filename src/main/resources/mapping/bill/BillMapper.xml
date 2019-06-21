@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.BillMapper">
+
+    <resultMap id="billMap" type="com.yjp.erp.model.po.bill.Bill">
+        <id property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="label" column="label"/>
+        <result property="primaryKey" column="primary_key"/>
+        <result property="foreignKey" column="foreign_key"/>
+        <result property="moduleId" column="module_id"/>
+    </resultMap>
+
+    <insert id="bathInsertBill" parameterType="com.yjp.erp.model.po.bill.Bill">
+        insert into bill (id, parent_id, module_id, label, name, primary_key, foreign_key) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.parentId},#{item.moduleId},#{item.label},#{item.name},#{item.primaryKey},#{item.foreignKey})
+        </foreach>
+    </insert>
+
+    <select id="getBillById" parameterType="Long" resultMap="billMap">
+		select * from bill where id=#{id}
+	</select>
+
+    <select id="getBillByParentId" parameterType="Long" resultMap="billMap">
+		select * from bill where parent_id=#{id}
+	</select>
+
+    <select id="getBillDetail" parameterType="com.yjp.erp.model.po.bill.Module" resultMap="billMap">
+        select t2.id, t2.parent_id, t2.label, t2.name, t2.primary_key, t2.foreign_key,t1.publish_state from module t1 join bill t2 on t1.id = t2.module_id
+        where t1.type_id = #{typeId} and t1.class_id = #{classId} and t1.active_state = 1;
+    </select>
+
+    <select id="getAllEntitiesCount" parameterType="map" resultType="int">
+        select count(*) from module t1 join bill t2 on t1.id = t2.module_id
+        where t1.active_state = 1 and t2.parent_id = -1
+        <if test="entityName != null and entityName != ''">
+            and t2.label like concat('%',#{entityName},'%')
+        </if>
+        <if test="status != null">
+            and t1.publish_state = #{status}
+        </if>
+    </select>
+
+    <select id="getAllEntities" parameterType="map" resultType="map">
+        select t2.name entityName,t2.label displayName,t1.class_id classId,
+        t1.type_id typeId,t1.publish_state status,t1.gmt_create createTime,t1.gmt_modify lastUpdateTime
+        from module t1 join bill t2 on t1.id = t2.module_id
+        where t1.active_state = 1 and t2.parent_id = -1
+        <if test="entityName != null and entityName != ''">
+            and t2.label like concat('%',#{entityName},'%')
+        </if>
+        <if test="status != null">
+            and t1.publish_state = #{status}
+        </if>
+        order by t1.id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getBillByModuleId" parameterType="Long" resultMap="billMap">
+		select * from bill where module_id=#{moduleId} and parent_id = -1
+	</select>
+
+    <select id="getChildrenBillByParentId" parameterType="long" resultMap="billMap">
+        select id, parent_id, module_id, label, name, primary_key, foreign_key from bill where parent_id = #{parentId}
+    </select>
+
+    <select id="getBillFields" parameterType="com.yjp.erp.model.po.bill.Module" resultType="map">
+        select t3.label, t3.field_name fieldName ,
+        (select element_value from bill_field_property where field_id = t3.id and name = 'type') keyType
+        from module t1 join bill t2 on t1.id = t2.module_id
+        join bill_field t3 on t2.id = t3.bill_id
+        where t1.type_id = #{typeId} and t1.class_id = #{classId} and t1.active_state = 1 and t2.parent_id = -1
+    </select>
+
+    <select id="getBillByAllFields" parameterType="com.yjp.erp.model.po.bill.Module" resultType="map">
+        select t3.label, t3.field_name fieldName ,
+        (select element_value from bill_field_property where field_id = t3.id and name = 'type') keyType
+        from module t1 join bill t2 on t1.id = t2.module_id
+        join bill_field t3 on t2.id = t3.bill_id
+        where t1.type_id = #{typeId} and t1.class_id = #{classId} and t1.active_state = 1
+    </select>
+
+    <select id="listBills" resultType="map">
+        select t1.class_id classId,t1.type_id typeId,t2.label,t2.name,t1.id from module t1 join bill t2 on t1.id = t2.module_id
+        where t1.class_id = #{classId} and t1.active_state = 1 and t2.parent_id = -1 and t1.publish_state = 1
+    </select>
+
+    <select id="repetitionCheck" parameterType="String" resultType="java.lang.Long">
+        select id from bill_eeca where eeca_id = #{id} limit 1
+    </select>
+
+    <select id="listBillNamesByIds" resultType="com.yjp.erp.model.po.bill.TransformPO">
+        select t1.type_id typeId,t2.label from module t1 inner join bill t2 on t1.id = t2.module_id
+        where t1.class_id = 'bill' and t1.active_state = 1 and
+        t1.type_id in
+        <foreach collection="ids" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getFilterFields" parameterType="map" resultType="String">
+        select t3.field_name fieldName,t4.element_value typeValue from module t1 join bill t2 on t1.id = t2.module_id
+        join bill_field t3 on t2.id = t3.bill_id
+        join bill_field_web_property t4 on t3.id = t4.bill_field_id
+        where t1.class_id = #{classId} and t1.type_id = #{typeId}
+        and t1.active_state = 1 and t4.name = #{fieldElement}
+    </select>
+
+    <select id="getTypeIdByModuleId" parameterType="Long" resultType="String">
+        select type_id from module where id = #{moduleId}
+    </select>
+
+    <select id="listFieldRules" parameterType="map" resultType="map">
+        select t3.field_name fieldName,t3.rules from module t1 join bill t2 on t1.id = t2.module_id
+        join bill_field t3 on t2.id = t3.bill_id
+        where t1.class_id = #{classId} and t1.type_id = #{typeId} and t1.active_state = 1
+    </select>
+
+</mapper>

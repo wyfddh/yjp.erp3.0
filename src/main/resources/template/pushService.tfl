@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="../../../../../framework/xsd/service-definition-2.1.xsd">
+    <service verb="${serviceVerb}" type="script"
+             location="${serviceScript}" allow-remote="true" authz-action="all" authenticate="false">
+    </service>
+</services>

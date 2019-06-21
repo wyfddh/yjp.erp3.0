@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.system.UserRoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.system.UserRole">
+        <id property="id" column="id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+      id,role_id,user_id
+    </sql>
+    <select id="listRoleByUserList" resultMap="BaseResultMap" parameterType="java.util.List">
+      select a.id,a.role_id,a.user_id, b.role as roleName
+      from user_role a
+      left join role b on a.role_id = b.id
+      where a.user_id in
+      <foreach collection="list" item="item" open="(" close=")" separator=",">
+        #{item.id}
+      </foreach>
+      and b.status = 1
+    </select>
+    <insert id="insertList" parameterType="java.util.List">
+      insert into user_role
+      (id,role_id,user_id)
+      VALUES
+      <foreach collection="list" item="item" separator=",">
+        (#{item.id},#{item.roleId},#{item.userId})
+      </foreach>
+    </insert>
+    <delete id="deleteRoleByUserList" parameterType="java.util.List">
+      delete from user_role
+      where user_id in
+      <foreach collection="list" separator="," item="item" open="(" close=")">
+        #{item.id}
+      </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.system.MenuMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.system.Menu">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="icon" column="icon"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="parentTitle" column="parent_title"/>
+        <result property="resourceOrder" column="resource_order"/>
+        <result property="typeId" column="type_id"/>
+        <result property="classId" column="class_id"/>
+        <result property="template" column="template"/>
+        <result property="routePath" column="route_path"/>
+        <result property="nodeType" column="node_type"/>
+        <result property="status" column="status"/>
+        <result property="createDate" column="create_date"/>
+        <result property="creator" column="creator"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="updater" column="updater"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+      id,title,icon,parent_id,parent_title,resource_order,type_id,class_id,template,route_path,node_type,
+      status,create_date,creator,update_date,updater
+    </sql>
+    <insert id="insertMenuList" parameterType="com.yjp.erp.model.po.system.Menu">
+      insert into menu
+      (id,title,icon,parent_id,parent_title,resource_order,type_id,class_id,template,route_path,node_type,
+      status,create_date,creator,update_date,updater)
+      VALUES
+      <foreach collection="list" item="item" separator=",">
+        (
+        #{item.id},#{item.title},#{item.icon},#{item.parentId},#{item.parentTitle}#{item.resourceOrder},
+        #{item.typeId},#{item.classId},#{item.template},#{item.routePath},#{item.nodeType},#{item.status},
+        #{item.createDate},#{item.creator},#{item.updateDate},#{item.updater}
+        )
+      </foreach>
+    </insert>
+    <insert id="insertMenu" parameterType="com.yjp.erp.model.po.system.Menu">
+      insert into menu
+      (id,title,icon,parent_id,parent_title,resource_order,type_id,class_id,template,route_path,node_type,
+      status,create_date,creator,update_date,updater)
+      VALUES
+      (
+        #{id},#{title},#{icon},#{parentId},#{parentTitle},#{resourceOrder},
+        #{typeId},#{classId},#{template},#{routePath},#{nodeType},#{status},
+        #{createDate},#{creator},#{updateDate},#{updater}
+      )
+    </insert>
+    <update id="updateMenuSelective" parameterType="com.yjp.erp.model.po.system.Menu">
+      update menu
+      <set>
+        <if test="title != null and title != ''">
+          title = #{title},
+        </if>
+        <if test="icon != null and icon != ''">
+          icon = #{icon},
+        </if>
+        <if test="parentId != null">
+          parent_id = #{parentId},
+        </if>
+        <if test="parentTitle != null">
+          parent_title = #{parentTitle},
+        </if>
+        <if test="resourceOrder != null">
+          resource_order = #{resourceOrder},
+        </if>
+        <if test="typeId != null">
+          type_id = #{typeId},
+        </if>
+        <if test="classId != null">
+          class_id = #{classId},
+        </if>
+        <if test="template != null">
+          template = #{template},
+        </if>
+        <if test="routePath != null and routePath != ''">
+          route_path = #{routePath},
+        </if>
+        <if test="nodeType != null and nodeType != ''">
+          node_type = #{nodeType},
+        </if>
+        <if test="status != null">
+          status = #{status},
+        </if>
+        <if test="createDate != null">
+          create_date = #{createDate},
+        </if>
+        <if test="creator != null">
+          creator = #{creator},
+        </if>
+        <if test="updateDate != null">
+          update_date = #{updateDate},
+        </if>
+        <if test="updater != null">
+          updater = #{updater},
+        </if>
+      </set>
+      where id = #{id}
+    </update>
+    <update id="batchUpdate" parameterType="java.util.List">
+      update menu
+      <trim prefix="set" suffixOverrides=",">
+        <trim prefix="node_type =case" suffix="end,">
+          <foreach collection="list" item="item" index="index">
+            when id=#{item.id} then #{item.nodeType}
+          </foreach>
+        </trim>
+      </trim>
+      where id in
+      <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+        #{item.id}
+      </foreach>
+    </update>
+
+    <delete id="deleteMenu" parameterType="java.util.List">
+      delete from menu
+      where id IN
+      <foreach collection="list" item="item" open="(" close=")" separator=",">
+        #{item}
+      </foreach>
+    </delete>
+    <select id="listAllMenu" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from menu
+      where status in (0,1)
+      order by resource_order desc
+    </select>
+    <select id="listMenuByRole" resultMap="BaseResultMap" parameterType="com.yjp.erp.model.po.system.Role">
+      select
+      DISTINCT 
+      a.id,a.title,a.icon,a.parent_id,a.parent_title,a.resource_order,a.type_id,a.class_id,a.template,
+      a.route_path,a.node_type,a.status
+      from menu a
+      left join role_menu b on a.id = b.menu_id
+      left join role c on b.role_id = c.id
+      where a.status in (0,1)
+      and c.status = 1
+      and c.id in
+      (
+      <foreach collection="list" item="item" separator=",">
+        #{item.id}
+      </foreach>
+      )
+      order by a.resource_order desc
+    </select>
+    <select id="getMenuById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      select
+      <include refid="Base_Column_List"/>
+      from menu
+      where id = #{id}
+    </select>
+    <select id="checkMenuName" resultType="java.lang.Integer" parameterType="java.util.Map">
+      select count(1)
+      from menu
+      where title = #{name}
+      <if test="id != null" >
+        and <![CDATA[ id <> #{id} ]]>
+      </if>
+      and status in (0,1)
+    </select>
+    <select id="checkMenuPath" resultType="java.lang.Integer" parameterType="java.util.Map">
+      select count(1)
+      from menu
+      where route_path = #{path}
+      <if test="id != null" >
+        and <![CDATA[ id <> #{id} ]]>
+      </if>
+      and status in (0,1)
+    </select>
+
+</mapper>

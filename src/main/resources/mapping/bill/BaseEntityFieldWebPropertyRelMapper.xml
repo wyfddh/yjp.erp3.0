@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.base.BaseEntityFieldWebPropertyRelMapper">
+
+    <resultMap id="billFieldWebRelPropertyMap" type="com.yjp.erp.model.po.bill.BillFieldWebPropertyRel">
+        <id property="id" column="id"/>
+        <result property="fieldWebId" column="field_web_id"/>
+        <result property="tableName" column="table_name"/>
+        <result property="srcField" column="src_field"/>
+        <result property="destField" column="dest_field"/>
+        <result property="classId" column="class_id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="keyType" column="key_type"/>
+    </resultMap>
+
+    <insert id="bathInsertFieldsRefs" parameterType="com.yjp.erp.model.po.bill.BillFieldWebPropertyRel">
+        insert into base_entity_field_web_property_rel (field_web_id, table_name, src_field, dest_field, class_id, type_id, key_type)
+        values
+        <foreach collection="list" separator="," item="item" index="index">
+            (#{item.fieldWebId},#{item.tableName},#{item.srcField},#{item.destField},#{item.classId},#{item.typeId},#{item.keyType})
+        </foreach>
+    </insert>
+
+    <select id="getRefProperties" resultType="java.util.Map">
+        select src_field keyField, dest_field valueField, class_id classId, type_id typeId, key_type keyType from base_entity_field_web_property_rel where field_web_id = #{id}
+    </select>
+
+</mapper>

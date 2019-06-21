@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.ServiceMapper">
+
+    <resultMap id="serviceMap" type="com.yjp.erp.model.po.service.Service">
+        <id column="id" property="id"/>
+        <result column="name" property="serviceName"/>
+        <result column="verb" property="verb"/>
+        <result column="script" property="script"/>
+        <result column="label" property="label"/>
+        <result column="service_type" property="serviceType"/>
+    </resultMap>
+
+    <resultMap id="commonServiceRetMap" type="com.yjp.erp.model.domain.ServicePropertyDO">
+        <id column="id" property="id"/>
+        <result column="service_name" property="serviceName"/>
+        <result column="verb" property="verb"/>
+        <result column="service_script" property="script"/>
+        <result column="label" property="label"/>
+    </resultMap>
+
+    <resultMap id="commonActionRetMap" type="com.yjp.erp.model.domain.ActionDO">
+        <id column="id" property="id"/>
+        <result column="label" property="label"/>
+        <result column="button" property="actionName"/>
+        <result column="icon" property="icon"/>
+        <result column="before_service" property="beforeService"/>
+        <result column="after_service" property="afterService"/>
+        <result column="service_name" property="serviceName"/>
+    </resultMap>
+
+    <insert id="bathInsertService" parameterType="com.yjp.erp.model.po.service.Service">
+        insert into service (id,name, label, verb, noun, location, script, role_authorization) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id},#{item.serviceName},#{item.label},#{item.verb},#{item.noun},#{item.location},#{item.script},#{item.roleAuthorization})
+        </foreach>
+    </insert>
+
+    <select id="getServiceById" parameterType="Long" resultMap="serviceMap">
+		select * from service where id=#{id}
+	</select>
+
+    <select id="getScriptDemo" resultType="String">
+        select service_script from model_service_script where script_code = 0
+    </select>
+
+    <select id="listActions" resultMap="commonActionRetMap" >
+        select t1.label, t1.button, t1.icon, t1.before_service, t1.after_service, t2.service_name
+        from model_action t1 join model_service_script t2 on t1.ref_service = t2.id
+    </select>
+
+    <select id="getCommonServices" resultMap="commonServiceRetMap">
+        select service_name, verb, service_script, label from model_service_script where script_code > 0
+    </select>
+
+    <select id="listActionService" parameterType="com.yjp.erp.model.po.bill.Module" resultType="map">
+        select t4.id, t4.name, t4.label, t4.verb, t4.noun, t4.script from module t1 join bill_action t2 on t1.id = t2.module_id
+        join action_service t3 on t3.action_id = t2.id
+        join service t4 on t3.service_id = t4.id
+        where t1.class_id = #{classId} and t1.type_id = #{typeId} and t1.active_state = 1
+    </select>
+
+    <select id="listEecaService" parameterType="com.yjp.erp.model.po.bill.Module" resultType="map">
+        select t4.id, t4.name, t4.label, t4.verb, t4.noun, t4.script from module t1 join bill_eeca t2 on t1.id = t2.module_id
+        join eeca_service t3 on t3.eeca_id = t2.id
+        join service t4 on t3.service_id = t4.id
+        where t1.class_id = #{classId} and t1.type_id = #{typeId} and t1.active_state = 1
+    </select>
+
+</mapper>

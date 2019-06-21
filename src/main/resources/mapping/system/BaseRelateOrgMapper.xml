@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.system.BaseOrgRelateOrgMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.system.BaseRelateOrg">
+        <id property="id" column="id"/>
+        <result property="baseOrgId" column="base_org_id"/>
+        <result property="virtualOrgId" column="virtual_org_id"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+      id,base_org_id,virtual_org_id
+    </sql>
+    <delete id="deleteByVOrgId" parameterType="java.lang.Long">
+      delete from virtual_org_relate_base_org
+      where virtual_org_id = #{vId}
+    </delete>
+    <insert id="batchInsert" parameterType="java.util.List">
+      insert into virtual_org_relate_base_org
+      (id,base_org_id,virtual_org_id)
+      VALUES
+        <foreach collection="list" item="item" separator=",">
+          (#{item.id},#{item.baseOrgId},#{item.virtualOrgId})
+        </foreach>
+    </insert>
+    <select id="countByBaseOrgId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+      select count(1) from virtual_org_relate_base_org
+      where base_org_id = #{bId}
+    </select>
+    <select id="listOrgRelateByVOrgIds" resultMap="BaseResultMap" parameterType="java.util.List">
+      SELECT
+      <include refid="Base_Column_List"/>
+      from virtual_org_relate_base_org
+      where virtual_org_id in
+      (
+        <foreach collection="list" separator="," item="item">
+          #{item}
+        </foreach>
+      )
+    </select>
+    <select id="listVOrgRelateByBOrgId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      select
+      <include refid="Base_Column_List"/>
+      from virtual_org_relate_base_org
+      where virtual_org_id = #{bId}
+    </select>
+</mapper>

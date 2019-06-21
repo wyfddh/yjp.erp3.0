@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.EecaServiceMapper">
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.eeca.EecaService">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="eeca_id" jdbcType="BIGINT" property="eecaId"/>
+        <result column="service_id" jdbcType="BIGINT" property="serviceId"/>
+        <result column="priority" jdbcType="SMALLINT" property="priority"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, eeca_id, service_id, priority
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from eeca_service
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from eeca_service
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.yjp.erp.model.po.eeca.EecaService">
+    insert into eeca_service (id, eeca_id, service_id, 
+      priority)
+    values (#{id,jdbcType=INTEGER}, #{eecaId,jdbcType=BIGINT}, #{serviceId,jdbcType=BIGINT}, 
+      #{priority,jdbcType=SMALLINT})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yjp.erp.model.po.eeca.EecaService">
+        insert into eeca_service
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="eecaId != null">
+                eeca_id,
+            </if>
+            <if test="serviceId != null">
+                service_id,
+            </if>
+            <if test="priority != null">
+                priority,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="eecaId != null">
+                #{eecaId,jdbcType=BIGINT},
+            </if>
+            <if test="serviceId != null">
+                #{serviceId,jdbcType=BIGINT},
+            </if>
+            <if test="priority != null">
+                #{priority,jdbcType=SMALLINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yjp.erp.model.po.eeca.EecaService">
+        update eeca_service
+        <set>
+            <if test="eecaId != null">
+                eeca_id = #{eecaId,jdbcType=BIGINT},
+            </if>
+            <if test="serviceId != null">
+                service_id = #{serviceId,jdbcType=BIGINT},
+            </if>
+            <if test="priority != null">
+                priority = #{priority,jdbcType=SMALLINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yjp.erp.model.po.eeca.EecaService">
+    update eeca_service
+    set eeca_id = #{eecaId,jdbcType=BIGINT},
+      service_id = #{serviceId,jdbcType=BIGINT},
+      priority = #{priority,jdbcType=SMALLINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+    <resultMap id="eecaService" type="com.yjp.erp.model.po.eeca.EecaService">
+        <id property="id" column="id"/>
+        <result property="eecaId" column="eeca_id"/>
+        <result property="serviceId" column="service_id"/>
+        <result property="onUpdate" column="on_update"/>
+        <result property="priority" column="priority"/>
+    </resultMap>
+
+    <select id="getByEecaId" parameterType="Long" resultMap="eecaService">
+        select * from eeca_service where eeca_id=#{eecaId} order by priority
+    </select>
+
+
+    <insert id="bathInsertEecaService" parameterType="com.yjp.erp.model.po.eeca.EecaService">
+        insert into eeca_service (id, eeca_id, service_id, priority) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.eecaId},#{item.serviceId},#{item.priority})
+        </foreach>
+    </insert>
+</mapper>

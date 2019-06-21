@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.base.BaseEntityFieldMapper">
+
+    <resultMap id="billFieldMap" type="com.yjp.erp.model.po.bill.BillField">
+        <id property="id" column="id"/>
+        <result property="billId" column="bill_id"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="label" column="label"/>
+        <result property="rules" column="rules"/>
+    </resultMap>
+
+    <resultMap id="billMoquiFieldResult" type="com.yjp.erp.model.po.bill.BillField">
+        <id property="id" column="id"/>
+        <result property="billId" column="bill_id"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="label" column="label"/>
+        <result property="rules" column="rules"/>
+        <collection property="billFieldProperties" ofType="com.yjp.erp.model.po.bill.BillFieldProperty" >
+            <id column="propertyId" property="id" />
+            <result column="field_id" property="fieldId" />
+            <result column="name" property="name" />
+            <result column="element_value" property="elementValue" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="billWebFieldResult" type="com.yjp.erp.model.po.bill.BillField">
+        <id property="id" column="id"/>
+        <result property="billId" column="bill_id"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="label" column="label"/>
+        <result property="rules" column="rules"/>
+        <collection property="billFieldWebProperties" ofType="com.yjp.erp.model.po.bill.BillFieldWebProperty" >
+            <id column="propertyId" property="id" />
+            <result column="bill_field_id" property="billFieldId" />
+            <result column="name" property="name" />
+            <result column="element_value" property="elementValue" />
+            <association property="billFieldWebPropertyRel" resultMap="relPropertyMap"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="relPropertyMap" type="com.yjp.erp.model.po.bill.BillFieldWebPropertyRel">
+        <id property="id" column="rel_id"/>
+        <result property="fieldWebId" column="field_web_id"/>
+        <result property="tableName" column="table_name"/>
+        <result property="srcField" column="src_field"/>
+        <result property="destField" column="dest_field"/>
+        <result property="keyType" column="key_type"/>
+        <result property="classId" column="class_id"/>
+        <result property="typeId" column="type_id"/>
+    </resultMap>
+
+    <insert id="bathInsertBillFields" parameterType="com.yjp.erp.model.po.bill.BillField">
+        insert into base_entity_field (id, bill_id, label, field_name,rules) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.billId},#{item.label},#{item.fieldName},#{item.rules})
+        </foreach>
+    </insert>
+
+    <select id="getBillFieldByBillId" resultMap="billFieldMap">
+		select * from base_entity_field where bill_id=#{billId}
+	</select>
+
+    <select id="getBillMoquiProperties" parameterType="long" resultMap="billMoquiFieldResult">
+        select t1.id,t1.field_name ,t2.id propertyId,t2.name, t2.element_value
+        from base_entity_field t1 join base_entity_field_property t2 on t1.id = t2.field_id where t1.bill_id = #{id}
+    </select>
+
+    <select id="getBillWebProperties" parameterType="long" resultMap="billWebFieldResult">
+        select t1.id, t1.bill_id, t1.field_name, t1.rules,t2.id propertyId, t2.bill_field_id, t2.name, t2.element_value,
+        t3.id rel_id, t3.field_web_id, t3.table_name, t3.src_field, t3.dest_field, t3.key_type,t3.type_id,t3.class_id
+        from base_entity_field t1
+        join base_entity_field_web_property t2 on t1.id = t2.bill_field_id
+        left join base_entity_field_web_property_rel t3 on t2.id = t3.field_web_id
+        where t1.bill_id = #{id}
+    </select>
+
+</mapper>

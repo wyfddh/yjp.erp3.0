@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.ModelMapper">
+
+    <resultMap id="billMoquiFieldResult" type="com.yjp.erp.model.po.bill.BillField">
+        <id property="id" column="id"/>
+        <result property="billId" column="bill_id"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="label" column="label"/>
+        <result property="rules" column="rules"/>
+        <collection property="billFieldProperties" ofType="com.yjp.erp.model.po.bill.BillFieldProperty" >
+            <id column="propertyId" property="id" />
+            <result column="field_id" property="fieldId" />
+            <result column="name" property="name" />
+            <result column="element_value" property="elementValue" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="billWebFieldResult" type="com.yjp.erp.model.po.bill.BillField">
+        <id property="id" column="id"/>
+        <result property="billId" column="bill_module_id"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="label" column="label"/>
+        <result property="rules" column="rules"/>
+        <collection property="billFieldWebProperties" ofType="com.yjp.erp.model.po.bill.BillFieldWebProperty" >
+            <id column="propertyId" property="id" />
+            <result column="bill_model_field_id" property="billFieldId" />
+            <result column="name" property="name" />
+            <result column="element_value" property="elementValue" />
+            <association property="billFieldWebPropertyRel" resultMap="relPropertyMap"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="relPropertyMap" type="com.yjp.erp.model.po.bill.BillFieldWebPropertyRel">
+        <id property="id" column="rel_id"/>
+        <result property="fieldWebId" column="field_web_id"/>
+        <result property="tableName" column="table_name"/>
+        <result property="srcField" column="src_field"/>
+        <result property="destField" column="dest_field"/>
+        <result property="keyType" column="key_type"/>
+        <result property="classId" column="class_id"/>
+        <result property="typeId" column="type_id"/>
+    </resultMap>
+
+    <resultMap id="serviceModelResultMap" type="com.yjp.erp.model.domain.ServicePropertyDO">
+        <id property="id" column="id"/>
+        <result property="serviceName" column="name"/>
+        <result property="label" column="label"/>
+        <result property="verb" column="verb"/>
+        <result property="noun" column="noun"/>
+        <result property="script" column="script"/>
+    </resultMap>
+
+    <select id="getModelMoquiProperties" resultMap="billMoquiFieldResult">
+        select t1.id, t1.field_name,t2.id propertyId, t2.name, t2.element_value
+        from bill_model_field t1
+        join bill_model_field_property t2 on t1.id = t2.field_id
+    </select>
+
+    <select id="getModelWebProperties" resultMap="billWebFieldResult">
+        select t1.id, t1.bill_model_id, t1.field_name, t1.rules,t2.id propertyId, t2.bill_model_field_id, t2.name, t2.element_value,
+        t3.id rel_id, t3.field_web_id, t3.table_name, t3.src_field, t3.dest_field, t3.key_type,t3.type_id,t3.class_id
+        from bill_model_field t1
+        join bill_model_field_web_property t2 on t1.id = t2.bill_model_field_id
+        left join bill_model_field_web_property_rel t3 on t2.id = t3.field_web_id
+    </select>
+
+    <select id="getGlobalServices" resultMap="serviceModelResultMap">
+        select id, name, label, verb, noun, script, service_type
+        from service where service_type = 1
+    </select>
+
+</mapper>

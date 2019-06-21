@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.BillEecaRuleFieldMapper">
+    <insert id="bathInsertBillEecaRuleField" parameterType="com.yjp.erp.model.po.eeca.BillEecaRuleField">
+        insert into bill_eeca_rule_field (id, bill_eeca_rule_id, dest_field, src_field) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.billEecaRuleId},#{item.destField},#{item.srcField})
+        </foreach>
+    </insert>
+
+    <resultMap id="billEecaRuleField" type="com.yjp.erp.model.po.eeca.BillEecaRuleField">
+        <id property="id" column="id"/>
+        <result property="billEecaRuleId" column="bill_eeca_rule_id"/>
+        <result property="srcField" column="src_field"/>
+        <result property="destField" column="dest_field"/>
+    </resultMap>
+
+    <select id="getBillEecaRuleField" parameterType="Long" resultMap="billEecaRuleField">
+        select * from bill_eeca_rule_field where bill_eeca_rule_id=#{billEecaRuleId}
+    </select>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.system.UserOrgMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.system.UserOrg">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="orgId" column="org_id"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+      id,user_id,org_id
+    </sql>
+    <insert id="insertList" parameterType="java.util.List">
+      insert into user_org
+      (id,user_id,org_id)
+      VALUES
+      <foreach collection="list" item="item" separator=",">
+        (#{item.id},#{item.userId},#{item.orgId})
+      </foreach>
+    </insert>
+    <delete id="deleteUserOrgByUserList" parameterType="java.util.List">
+      delete from user_org
+      where user_id in
+      <foreach collection="list" item="item" separator="," open="(" close=")">
+        #{item.id}
+      </foreach>
+    </delete>
+    <select id="listUserOrgByUserList" parameterType="java.util.List" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List"/>
+      from user_org
+      where user_id in
+      <foreach collection="list" item="item" separator="," open="(" close=")">
+        #{item.id}
+      </foreach>
+    </select>
+    <select id="getListByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      select
+      <include refid="Base_Column_List"/>
+      from user_org
+      where user_id = #{userId}
+    </select>
+    <select id="getListByOrgId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      SELECT
+      <include refid="Base_Column_List"/>
+      from user_org
+      where org_id = #{orgId}
+    </select>
+
+</mapper>

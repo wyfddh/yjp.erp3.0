@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.MqMapper">
+  <resultMap id="BaseResultMap" type="com.yjp.erp.model.mq.MqQueueService">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="queue_name" jdbcType="VARCHAR" property="queueName" />
+    <result column="rest_url" jdbcType="VARCHAR" property="restUrl" />
+    <result column="service_id" jdbcType="BIGINT" property="serviceId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="active_state" jdbcType="TINYINT" property="activeState" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, queue_name, rest_url, service_id, description, active_state, gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from mq_queue_service
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="listAllMqQueues" resultMap="BaseResultMap">
+      select queue_name, rest_url from mq_queue_service where active_state = 1
+  </select>
+
+  <insert id="saveProduceMessage" parameterType="com.yjp.erp.model.mq.MqMessageProducer">
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into mq_message_producer (exchange_name, message, gmt_create, message_state) values
+    (#{exchangeName},#{message},now(),#{messageState})
+  </insert>
+
+  <update id="updateProduceMessage" parameterType="com.yjp.erp.model.mq.MqMessageProducer">
+    update mq_message_producer set message_state = #{messageState} where id = #{id}
+  </update>
+
+  <insert id="saveConsumeMessage" parameterType="com.yjp.erp.model.mq.MqMessageConsume">
+    <selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into mq_message_consume (queue_name, message, gmt_create, message_state) values
+    (#{queueName},#{message},now(),#{messageState})
+  </insert>
+
+  <update id="updateConsumeMessage" parameterType="com.yjp.erp.model.mq.MqMessageConsume">
+    update mq_message_consume set message_state = #{messageState} where id = #{id}
+  </update>
+
+</mapper>

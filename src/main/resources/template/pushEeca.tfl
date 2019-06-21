@@ -1,0 +1,18 @@
+<eecas xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+       xsi:noNamespaceSchemaLocation="../../../../framework/xsd/entity-eca-2.1.xsd">
+    <eeca entity="${entityName}" on-update="true">
+             <condition>
+                 <expression>
+                    def result
+                    def logger=ec.getLogger()
+                    logger.info("eeca 的监控字段 status:"+ec.web.parameters.status)
+                    result=(Integer.valueOf(ec.web.parameters.status)).equals(Integer.valueOf(0))
+                    logger.info("是否触发eeca:"+result)
+                    result
+                 </expression>
+             </condition>
+        <actions>
+            <service-call name="${serviceName}"/>
+        </actions>
+    </eeca>
+</eecas>

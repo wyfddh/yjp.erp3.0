@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.BillEecaRuleMapper">
+    <insert id="bathInsertBillEecaRule" parameterType="com.yjp.erp.model.po.eeca.BillEecaRule">
+        insert into bill_eeca_rule (id, bill_eeca_id, parent_id, detail_id, dest_entity, src_entity) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.billEecaId},#{item.parentId},#{item.detailId},#{item.destEntity},#{item.srcEntity})
+        </foreach>
+    </insert>
+
+    <resultMap id="billEecaRule" type="com.yjp.erp.model.po.eeca.BillEecaRule">
+        <id property="id" column="id"/>
+        <result property="bilEecaId" column="bill_eeca_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="detailId" column="detail_id"/>
+        <result property="downFkId" column="down_fk_id"/>
+        <result property="srcEntity" column="src_entity"/>
+        <result property="destEntity" column="dest_entity"/>
+    </resultMap>
+    <select id="getBillEecaRule" parameterType="Long" resultMap="billEecaRule">
+        select * from bill_eeca_rule where bill_eeca_id=#{billEecaId}
+    </select>
+
+
+</mapper>

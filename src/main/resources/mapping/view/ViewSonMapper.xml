@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.ViewSonMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.view.ViewSon">
+        <id property="id" column="id"/>
+        <result property="masterId" column="master_id"/>
+        <result property="entityName" column="entity_name"/>
+        <result property="entityAlias" column="entity_alias"/>
+        <result property="joinFromAlias" column="join_from_alias"/>
+        <result property="entityParentValue" column="entity_parent_value"/>
+        <result property="entityValue" column="entity_value"/>
+    </resultMap>
+
+    <select id="getViewSonByParentId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      select
+      id,master_id,entity_name,entity_alias,join_from_alias,entity_parent_value,entity_value
+      from view_son
+      where master_id = #{masterId}
+    </select>
+    <select id="getAllViewSon" resultMap="BaseResultMap">
+      select
+      id,master_id,entity_name,entity_alias,join_from_alias,entity_parent_value,entity_value
+      from view_son
+    </select>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into view_son
+        (
+          id,master_id,entity_name,entity_alias,
+          join_from_alias,entity_parent_value,entity_value
+        )
+        values
+        <foreach collection="list" item="item" separator=",">
+            (
+              #{item.id},
+              #{item.masterId},
+              #{item.entityName},
+              #{item.entityAlias},
+              #{item.joinFromAlias},
+              #{item.entityParentValue},
+              #{item.entityValue}
+            )
+        </foreach>
+    </insert>
+</mapper>

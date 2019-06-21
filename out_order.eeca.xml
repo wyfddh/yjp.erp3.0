@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<eecas xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../framework/xsd/entity-eca-2.1.xsd">
+  <eeca entity="out_order">
+    <actions>
+      <service-call name="entity.eeca.InboundOrder.InboundOrderService.get#InboundOrder"/>
+    </actions>
+  </eeca>
+</eecas>

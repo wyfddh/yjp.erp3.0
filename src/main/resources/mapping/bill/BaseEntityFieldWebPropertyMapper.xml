@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.base.BaseEntityFieldWebPropertyMapper">
+
+  <resultMap id="billFieldWebPropertyMap" type="com.yjp.erp.model.po.bill.BillFieldWebProperty">
+    <id property="id" column="id"/>
+    <result property="billFieldId" column="bill_model_field_id"/>
+    <result property="name" column="name"/>
+    <result property="elementValue" column="element_value"/>
+  </resultMap>
+
+  <insert id="bathInsertBillFieldsWebProperties" parameterType="com.yjp.erp.model.po.bill.BillFieldWebProperty">
+    insert into base_entity_field_web_property (id, bill_field_id, name, element_value) values
+    <foreach collection="list" index="index" item="item" separator=",">
+      (#{item.id},#{item.billFieldId},#{item.name},#{item.elementValue})
+    </foreach>
+  </insert>
+
+  <select id="getFieldWebProperties" resultMap="billFieldWebPropertyMap">
+    select * from base_entity_field_web_property where bill_field_id = #{billFieldId}
+  </select>
+
+</mapper>

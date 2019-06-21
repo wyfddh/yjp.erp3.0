@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.mq.MqServiceIntegrationMapper">
+
+    <resultMap id="mqServiceIntegrationResultMap" type="com.yjp.erp.model.mq.MqServiceIntegration">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="classId" property="classId"/> 
+        <result column="typeId" property="typeId"/> 
+        <result column="status" property="status"/>
+        <result column="parentEntity" property="parentEntity"/>
+        <result column="childEntity" property="childEntity"/>
+        <result column="moquiUrl" property="moquiUrl"/>
+        <result column="exchangeName" property="exchangeName"/> 
+        <result column="queueName" property="queueName"/> 
+        <result column="description" property="description"/> 
+        <result column="createTime" property="createTime"/> 
+        <result column="lastUpdatedTime" property="lastUpdatedTime"/>
+        <collection property="relations" ofType="com.yjp.erp.model.mq.MqConversionRelation">
+            <id column="mqConversionRelation.id" property="id"/>
+            <result column="mqConversionRelation.mqId" property="mqId"/>
+            <result column="mqConversionRelation.sourceField" property="sourceField"/>
+            <result column="mqConversionRelation.targetField" property="targetField"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="mqServiceVOResultMap" type="com.yjp.erp.model.vo.mq.MqServiceIntegrationVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="classId" property="classId"/>
+        <result column="typeId" property="typeId"/>
+        <result column="status" property="status"/>
+        <result column="parentEntity" property="parentEntity"/>
+        <result column="childEntity" property="childEntity"/>
+        <result column="moquiUrl" property="moquiUrl"/>
+        <result column="exchangeName" property="exchangeName"/>
+        <result column="queueName" property="queueName"/>
+        <result column="description" property="description"/>
+        <result column="createTime" property="createTime"/>
+        <result column="lastUpdatedTime" property="lastUpdatedTime"/>
+        <collection property="relations" ofType="com.yjp.erp.model.mq.MqConversionRelation">
+            <id column="mqConversionRelation.id" property="id"/>
+            <result column="mqConversionRelation.mqId" property="mqId"/>
+            <result column="mqConversionRelation.sourceField" property="sourceField"/>
+            <result column="mqConversionRelation.targetField" property="targetField"/>
+        </collection>
+    </resultMap>
+
+    <sql id="mqServiceIntegrationColumns">
+        mq_service_integration.id AS "id",
+        mq_service_integration.name AS "name",
+        mq_service_integration.class_id AS "classId",
+        mq_service_integration.type_id AS "typeId",
+        mq_service_integration.status AS "status",
+        mq_service_integration.parent_entity AS "parentEntity",
+        mq_service_integration.child_entity AS "childEntity",
+        mq_service_integration.moqui_url AS "moquiUrl",
+        mq_service_integration.exchange_name AS "exchangeName",
+        mq_service_integration.queue_name AS "queueName",
+        mq_service_integration.description AS "description",
+        mq_service_integration.create_time AS "createTime",
+        mq_service_integration.last_updated_time AS "lastUpdatedTime"
+    </sql>
+
+    <sql id="mqServiceIntegrationAndRelationColumns">
+        mq_service_integration.id AS "id",
+        mq_service_integration.name AS "name",
+        mq_service_integration.class_id AS "classId",
+        mq_service_integration.type_id AS "typeId",
+        mq_service_integration.status AS "status",
+        mq_service_integration.parent_entity AS "parentEntity",
+        mq_service_integration.child_entity AS "childEntity",
+        mq_service_integration.moqui_url AS "moquiUrl",
+        mq_service_integration.exchange_name AS "exchangeName",
+        mq_service_integration.queue_name AS "queueName",
+        mq_service_integration.description AS "description",
+        mq_service_integration.create_time AS "createTime",
+        mq_service_integration.last_updated_time AS "lastUpdatedTime",
+        mq_conversion_relation.id AS "mqConversionRelation.id",
+        mq_conversion_relation.mq_id AS "mqConversionRelation.mqId",
+        mq_conversion_relation.source_field AS "mqConversionRelation.sourceField",
+        mq_conversion_relation.target_field AS "mqConversionRelation.targetField"
+    </sql>
+
+    <sql id="mqServiceIntegrationJoins">
+        LEFT JOIN mq_conversion_relation on mq_conversion_relation.mq_id = mq_service_integration.id
+    </sql>
+
+    <select id="get" resultMap="mqServiceVOResultMap">
+        SELECT
+        <include refid="mqServiceIntegrationAndRelationColumns" />
+        FROM mq_service_integration <include refid="mqServiceIntegrationJoins" />
+        <where>
+        mq_service_integration.id = #{id}
+        </where>
+    </select>
+
+    <select id="getByExchangeName" resultMap="mqServiceIntegrationResultMap">
+        SELECT
+        <include refid="mqServiceIntegrationAndRelationColumns" />
+        FROM mq_service_integration <include refid="mqServiceIntegrationJoins" />
+        <where>
+            mq_service_integration.exchange_name = #{exchangeName}
+        </where>
+    </select>
+
+    <select id="findList" resultMap="mqServiceIntegrationResultMap">
+        SELECT
+        <include refid="mqServiceIntegrationColumns"/>
+        FROM mq_service_integration
+        <where>
+            mq_service_integration.id= #{id}
+        </where>
+    </select>
+
+
+    <select id="findAllListCount" parameterType="map" resultType="int">
+        SELECT
+        count(*)
+        FROM mq_service_integration
+        <where>
+            <if test="name != null and name != ''">
+                and mq_service_integration.name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                and mq_service_integration.status = #{status}
+            </if>
+            <if test="status == null">
+                and mq_service_integration.status != -1
+            </if>
+        </where>
+    </select>
+
+    <select id="findAllList" parameterType="map" resultType="map">
+        SELECT
+        <include refid="mqServiceIntegrationColumns"/>
+        FROM mq_service_integration
+        <where>
+            <if test="name != null and name != ''">
+                and mq_service_integration.name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                and mq_service_integration.status = #{status}
+            </if>
+            <if test="status == null">
+                and mq_service_integration.status != -1
+            </if>
+        </where>
+        order by mq_service_integration.id desc limit #{startIndex},#{pageSize}
+    </select>
+
+    <select id="getEntityNameByTypeIdAndClassId" parameterType="map" resultType="map">
+        SELECT parentEntity,childEntity FROM
+            (SELECT
+                b1.name parentEntity,
+                b2.name childEntity
+            FROM
+            `module` t
+                LEFT JOIN bill b1 ON b1.module_id = t.id
+                LEFT JOIN bill b2 ON b2.parent_id = b1.id
+                WHERE t.class_id = #{classId}
+                AND t.type_id = #{typeId}
+            UNION ALL
+            SELECT
+                b1.name parentEntity,
+                b2.name childEntity
+            FROM
+                module t
+                LEFT JOIN base_entity b1 ON b1.module_id = t.id
+                LEFT JOIN base_entity b2 ON b2.parent_id = b1.id
+                WHERE t.class_id = #{classId}
+                AND t.type_id = #{typeId}
+            ) a
+        where a.parentEntity is not null;
+    </select>
+
+    <insert id="insert">
+        INSERT INTO mq_service_integration(
+            id,
+            name,
+            class_id,
+            type_id,
+            status,
+            parent_entity,
+            child_entity,
+            moqui_url,
+            exchange_name,
+            queue_name,
+            description,
+            create_time,
+            last_updated_time
+        )
+        VALUES (
+            #{id},
+            #{name},
+            #{classId},
+            #{typeId},
+            #{status},
+            #{parentEntity},
+            #{childEntity},
+            #{moquiUrl},
+            #{exchangeName},
+            #{queueName},
+            #{description},
+            #{createTime},
+            #{lastUpdatedTime}
+        )
+    </insert>
+
+    <insert id="insertBatch">
+        INSERT INTO mq_service_integration(
+            id,
+            name,
+            class_id,
+            type_id,
+            status,
+            parent_entity,
+            child_entity,
+            moqui_url,
+            exchange_name,
+            queue_name,
+            description,
+            create_time,
+            last_updated_time
+        )
+        VALUES
+        <foreach collection ="list" item="mqServiceIntegration" separator =",">
+        (
+            #{mqServiceIntegration.id},
+            #{mqServiceIntegration.name},
+            #{mqServiceIntegration.classId},
+            #{mqServiceIntegration.typeId},
+            #{mqServiceIntegration.status},
+            #{mqServiceIntegration.parentEntity},
+            #{mqServiceIntegration.childEntity},
+            #{mqServiceIntegration.moquiUrl},
+            #{mqServiceIntegration.exchangeName},
+            #{mqServiceIntegration.queueName},
+            #{mqServiceIntegration.description},
+            #{mqServiceIntegration.createTime},
+            #{mqServiceIntegration.lastUpdatedTime}
+        )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE mq_service_integration SET
+        id = #{id},
+        name = #{name},
+        class_id = #{classId},
+        type_id = #{typeId},
+        status = #{status},
+        parent_entity=#{parentEntity},
+        child_entity=#{childEntity},
+        moqui_url=#{moquiUrl},
+        exchange_name = #{exchangeName},
+        queue_name = #{queueName},
+        description = #{description},
+        last_updated_time = #{lastUpdatedTime}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE mq_service_integration SET
+        status = #{status}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

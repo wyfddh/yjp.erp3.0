@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.parsexml.ViewEntityMapper">
+
+    <resultMap id="viewEntityMap" type="com.yjp.erp.model.po.view.ViewEntity">
+        <id property="id" column="id"/>
+        <result property="moduleId" column="module_id"/>
+        <result property="label" column="label"/>
+        <result property="entityPackage" column="package"/>
+        <result property="autoClearCache" column="auto_clear_cache"/>
+        <result property="authorizeSkip" column="authorize_skip"/>
+    </resultMap>
+
+    <resultMap id="viewEntityListVO" type="com.yjp.erp.service.parsexml.model.vo.ViewEntityListVO">
+        <id property="id" column="id"/>
+        <result property="classId" column="class_id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="createTime" column="gmt_create"/>
+        <result property="lastUpdateTime" column="gmt_modify"/>
+        <result property="status" column="active_state"/>
+        <result property="entityName" column="entity_name"/>
+        <result property="displayName" column="label"/>
+    </resultMap>
+
+    <select id="getViewEntityByModuleId" parameterType="Long" resultMap="viewEntityMap">
+      select * from view_entity where module_id=#{moduleId}
+  </select>
+
+    <insert id="insertViewEntity" parameterType="com.yjp.erp.model.po.view.ViewEntity">
+    insert into view_entity (id, module_id, label,entity_name,package,auto_clear_cache,authorize_skip) values (#{id},#{moduleId},#{label},#{entityName},#{entityPackage},#{autoClearCache},#{authorizeSkip})
+  </insert>
+
+    <select id="countAll" resultType="Integer">
+        select count(*) from view_entity
+    </select>
+
+
+    <select id="getViewEntityByLikeEntityLabel" resultMap="viewEntityMap">
+        SELECT * from view_entity WHERE label like concat("%",#{label},"%")
+    </select>
+
+    <select id="getModulesByClassIdAndPublishState" parameterType="com.yjp.erp.service.parsexml.model.ViewEntityFilter" resultMap="viewEntityListVO">
+        select t1.class_id,t1.type_id,t1.publish_state,t1.gmt_create,t1.gmt_modify,t2.entity_name,t2.label from module t1 join view_entity t2 on t1.id = t2.module_id
+        where t1.class_id=#{classId}
+        <if test="publishStatus != null">
+            and t1.publish_state=#{publishStatus}
+        </if>
+        and t1.active_state = 1
+        <if test="label != null">
+            and t2.label like CONCAT('%',#{label},'%')
+        </if>
+        <if test="offset != null">
+            limit #{offset},#{size}
+        </if>
+
+    </select>
+
+    <select id="countViewByFilter" parameterType="com.yjp.erp.service.parsexml.model.ViewEntityFilter" resultType="Integer">
+        select count(*) from module t1 join view_entity t2 on t1.id = t2.module_id
+        where t1.class_id=#{classId}
+        <if test="publishStatus != null">
+            and t1.publish_state=#{publishStatus}
+        </if>
+        and t1.active_state = 1
+        <if test="label != null">
+            and t2.label like CONCAT('%',#{label},'%')
+        </if>
+    </select>
+
+</mapper>

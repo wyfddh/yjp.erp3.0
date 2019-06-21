@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.parsexml.BillEecaMapperP">
+    <resultMap id="eecaResultMap" type="com.yjp.erp.model.po.eeca.BillEeca">
+        <id property="id" column="id"/>
+        <result property="moduleId" column="module_id"/>
+        <result property="eventType" column="event_type"/>
+        <result property="eTrigger" column="e_trigger"/>
+        <result property="label" column="label"/>
+        <result property="eCondition" column="e_condition"/>
+        <result property="serviceName" column="service_name"/>
+        <result property="eMethod" column="e_method"/>
+        <result property="eecaId" column="eeca_id"/>
+        <result property="otherOptions" column="other_options"/>
+    </resultMap>
+
+    <select id="listBillEecaByModuleId" parameterType="Long" resultMap="eecaResultMap">
+        select * from bill_eeca where module_id=#{moduleId}
+    </select>
+
+</mapper>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.ExternalApiConfigMapper">
+
+    <resultMap id="externalApiConfigResultMap" type="com.yjp.erp.model.externalapi.ExternalApiConfig">
+        <id column="id" property="id"/> 
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="classId" property="classId"/>
+        <result column="typeId" property="typeId"/>
+        <result column="operateType" property="operateType"/> 
+        <result column="systemType" property="systemType"/> 
+        <result column="description" property="description"/>
+        <result column="method" property="method"/>
+        <result column="url" property="url"/>
+    </resultMap>
+
+    <resultMap id="externalApiConfigVOResultMap" type="com.yjp.erp.model.vo.externalapi.ExternalApiConfigVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="classId" property="classId"/>
+        <result column="typeId" property="typeId"/>
+        <result column="operateType" property="operateType"/>
+        <result column="systemType" property="systemType"/>
+        <result column="description" property="description"/>
+        <result column="method" property="method"/>
+        <result column="url" property="url"/>
+    </resultMap>
+
+    <sql id="externalApiConfigColumns">
+        external_api_config.id AS "id",
+        external_api_config.name AS "name",
+        external_api_config.status AS "status",
+        external_api_config.class_id AS "classId",
+        external_api_config.type_id AS "typeId",
+        external_api_config.operate_type AS "operateType",
+        external_api_config.system_type AS "systemType",
+        external_api_config.description AS "description",
+        external_api_config.method AS "method",
+        external_api_config.url AS "url"
+    </sql>
+
+    <select id="get" resultMap="externalApiConfigVOResultMap">
+        SELECT
+        <include refid="externalApiConfigColumns" />
+        FROM external_api_config
+        <where>
+        external_api_config.id = #{id}
+        </where>
+    </select>
+
+
+    <select id="findAllListCount" parameterType="map" resultType="int">
+        SELECT
+        count(*)
+        FROM external_api_config
+        <where>
+            <if test="name != null and name != ''">
+                and external_api_config.name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                and external_api_config.status = #{status}
+            </if>
+            <if test="classId != null">
+                and external_api_config.class_id = #{classId}
+            </if>
+            <if test="typeId != null">
+                and external_api_config.type_id = #{typeId}
+            </if>
+            <if test="systemType != null">
+                and external_api_config.system_type = #{systemType}
+            </if>
+            <if test="status == null">
+                and external_api_config.status != -1
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findAllList" parameterType="map" resultType="map">
+        SELECT
+        <include refid="externalApiConfigColumns"/>
+        FROM external_api_config
+        <where>
+            <if test="name != null and name != ''">
+                and external_api_config.name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                and external_api_config.status = #{status}
+            </if>
+            <if test="status == null">
+                and external_api_config.status != -1
+            </if>
+        </where>
+        order by external_api_config.id desc limit #{startIndex},#{pageSize}
+    </select>
+
+
+    <select id="findByParams" parameterType="map" resultMap="externalApiConfigResultMap">
+        SELECT
+        <include refid="externalApiConfigColumns"/>
+        FROM external_api_config
+        <where>
+            <if test="name != null and name != ''">
+                and external_api_config.name like concat('%',#{name},'%')
+            </if>
+            <if test="classId != null and classId != ''" >
+                and external_api_config.class_id = #{classId}
+            </if>
+            <if test="typeId != null and typeId != ''">
+                and external_api_config.type_id = #{typeId}
+            </if>
+            <if test="systemType != null and systemType != ''">
+                and external_api_config.system_type = #{systemType}
+            </if>
+            <if test="operateType != null and operateType != ''">
+                and external_api_config.operate_type = #{operateType}
+            </if>
+            <if test="status != null and status != ''">
+                and external_api_config.status = #{status}
+            </if>
+        </where>
+        order by external_api_config.id desc
+    </select>
+
+
+    <insert id="insert">
+        INSERT INTO external_api_config(
+            id,
+            name,
+            status,
+            class_id,
+            type_id,
+            operate_type,
+            system_type,
+            description,
+            method,
+            url
+        )
+        VALUES (
+            #{id},
+            #{name},
+            #{status},
+            #{classId},
+            #{typeId},
+            #{operateType},
+            #{systemType},
+            #{description},
+            #{method},
+            #{url}
+        )
+    </insert>
+
+
+    <update id="update">
+        UPDATE external_api_config SET
+        id = #{id},
+        name = #{name},
+        status = #{status},
+        class_id = #{classId},
+        type_id = #{typeId},
+        operate_type = #{operateType},
+        system_type = #{systemType},
+        description = #{description},
+        method = #{method},
+        url = #{url}
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete">
+        DELETE FROM external_api_config
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE external_api_config SET
+        status = #{status}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.BaseServiceInparaMapper">
+
+  <insert id="bathInsertServiceParam" parameterType="com.yjp.erp.model.po.service.ServiceInpara">
+    insert into bill_service_inpara (service_id, param_value, is_require) values
+    <foreach collection="list" separator="," item="item">
+      (#{item.serviceId},#{item.paramValue},#{item.isRequire})
+    </foreach>
+  </insert>
+
+</mapper>

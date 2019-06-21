@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.parsexml.ViewMemberEntityMapper">
+
+    <resultMap id="viewMemberEntityMap" type="com.yjp.erp.model.po.view.ViewMemberEntity">
+        <id property="id" column="id"/>
+        <result property="viewEntityId" column="view_entity_id"/>
+        <result property="entityAlias" column="entity_alias"/>
+        <result property="entityName" column="entity_name"/>
+        <result property="classId" column="class_id"/>
+        <result property="typeId" column="type_id"/>
+        <result property="joinFromAlias" column="join_from_alias"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="related" column="related"/>
+    </resultMap>
+
+    <select id="listViewMemberEntitiesByViewEntityId" parameterType="Long" resultMap="viewMemberEntityMap">
+      select * from view_member_entity where view_entity_id=#{viewEntityId}
+  </select>
+
+    <!--    <insert id="insertViewEntity" parameterType="com.yjp.erp.model.po.view.ViewEntity">-->
+    <!--    insert into view_entity values (id,module_id,label,entity_name,package,auto_clear_cache,authorization_skip)-->
+    <!--    VALUES (#{id},#{moduleId},#{label},#{entityName},#{entityPackage},#{autoClearCache},#{authorizationSkip})-->
+    <!--</insert>-->
+
+    <insert id="bathInsertViewMemberEntities" parameterType="com.yjp.erp.model.po.view.ViewMemberEntity">
+        insert into view_member_entity (id, view_entity_id, entity_alias,
+        entity_name,class_id,type_id,join_from_alias,field_name,related) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.viewEntityId},#{item.entityAlias},#{item.entityName},#{item.classId},#{item.typeId},#{item.joinFromAlias},#{item.fieldName},#{item.related})
+        </foreach>
+    </insert>
+</mapper>

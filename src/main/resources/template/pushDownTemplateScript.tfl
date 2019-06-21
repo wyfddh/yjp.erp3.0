@@ -1,0 +1,39 @@
+def logger = ec.getLogger()
+def parameters = ec.web.parameters
+def originEntityName="${originEntityName}"
+def originDetailEntityName="${originDetailEntityName}"
+def targetEntityName="${targetEntityName}"
+def targetEntityDetailName="${targetEntityDetailName}"
+def targetId
+def targetEntityValue= ec.entity.makeValue(targetEntityName)
+def originEntityValue=ec.entity.find(originEntityName).condition("id",parameters.id).one()
+
+logger.info("下推脚本接受到的数据: " + "originEntityName = " + originEntityName + " originDetailEntityName =" + originDetailEntityName + " targetEntityName = " + targetEntityName+" targetEntityDetailName = "+targetEntityDetailName)
+    //==========================start=============================
+    <#list "${fillTargetEntityValueMapping}"?split("/n") as x>
+         ${x?replace("/n","")}
+    </#list>
+    //==========================end===============================
+
+//生成目标实体的id
+targetId=ec.getId()
+targetEntityValue.id=targetId
+
+def originEntityDetailValue=ec.entity.find(originDetailEntityName).condition("parentId",parameters.id).list()
+for(def value : originEntityDetailValue){
+    def targetEntityDetailValue=ec.entity.makeValue(targetEntityDetailName)
+
+    //==========================start=============================
+    <#list "${fillTargetEntityDetailValueMapping}"?split("/n") as x>
+         ${x?replace("/n","")}
+    </#list>
+    //==========================end===============================
+
+    targetEntityDetailValue.parentId=targetId
+    targetEntityDetailValue.id=ec.getId()
+    logger.info("下推后的目标实体明细的值targetEntityDetailValue : "+targetEntityDetailValue)
+    targetEntityDetailValue.create()
+}
+
+logger.info("下推后的目标实体的值targetEntityValue : "+targetEntityValue)
+targetEntityValue.create()

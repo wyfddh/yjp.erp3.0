@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--<mapper namespace="com.yjp.erp.mapper.BillOptionRulesMapper">-->
+  <!--<resultMap id="BaseResultMap" tycom.yjp.erp.model.po.billbill.BillOptionRules">-->
+    <!--<id column="id" jdbcType="INTEGER" property="id" />-->
+    <!--<result column="module_id" jdbcType="BIGINT" property="moduleId" />-->
+    <!--<result column="option_type" jdbcType="TINYINT" property="optionType" />-->
+    <!--<result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />-->
+      <!--<result column="option_rules" property="optionRules"/>-->
+  <!--</resultMap>-->
+
+  <!--<insert id="bathInsertRules" parameterTycom.yjp.erp.model.po.billbill.BillOptionRules">-->
+      <!--insert into bill_option_rules (module_id, option_type, option_rules) values-->
+      <!--<foreach collection="list" separator="," item="item" index="index">-->
+        <!--(#{item.moduleId},#{item.optionType},#{item.optionRules})-->
+      <!--</foreach>-->
+  <!--</insert>-->
+
+    <!--<select id="getOptionRulesByModule" parameterType="Long" resultMap="BaseResultMap">-->
+		<!--select * from bill_option_rules where module_id=#{moduleId}-->
+	<!--</select>-->
+
+<!--</mapper>-->
+
+<mapper namespace="com.yjp.erp.mapper.BillOptionRulesMapper">
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.bill.BillOptionRules">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="module_id" jdbcType="BIGINT" property="moduleId" />
+        <result column="option_type" jdbcType="TINYINT" property="optionType" />
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    </resultMap>
+
+    <insert id="bathInsertRules" parameterType="com.yjp.erp.model.po.bill.BillOptionRules">
+        insert into bill_option_rules (module_id, option_type, option_rules) values
+        <foreach collection="list" separator="," item="item" index="index">
+            (#{item.moduleId},#{item.optionType},#{item.optionRules})
+        </foreach>
+    </insert>
+
+    <select id="getOptionRulesByModule" parameterType="Long" resultMap="BaseResultMap">
+        select * from bill_option_rules where module_id=#{moduleId}
+    </select>
+
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.ModuleMapper">
+
+    <resultMap id="ModuleResult" type="com.yjp.erp.model.po.bill.Module">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="class_id" jdbcType="VARCHAR" property="classId"/>
+        <result column="type_id" jdbcType="VARCHAR" property="typeId"/>
+        <result column="active_state" jdbcType="TINYINT" property="activeState"/>
+        <result column="publish_state" jdbcType="TINYINT" property="publishState"/>
+    </resultMap>
+
+    <resultMap id="viewEntityMap" type="com.yjp.erp.model.po.view.ViewEntity">
+        <id property="id" column="id"/>
+        <result property="moduleId" column="module_id"/>
+        <result property="label" column="label"/>
+        <result property="entityPackage" column="package"/>
+        <result property="autoClearCache" column="auto_clear_cache"/>
+        <result property="authorizeSkip" column="authorize_skip"/>
+    </resultMap>
+
+    <select id="getModuleByClassIdAndTypeId" parameterType="com.yjp.erp.model.po.bill.Module" resultMap="ModuleResult">
+    select * from module where class_id = #{classId} and type_id = #{typeId} and active_state = 1 limit 1
+  </select>
+
+    <select id="listAllAvailableModules" resultMap="ModuleResult">
+		select * from module where active_state=1
+	</select>
+
+    <select id="getModuleById" parameterType="Long" resultMap="ModuleResult">
+    select * from module where id = #{id}
+  </select>
+
+    <update id="deleteModules" parameterType="com.yjp.erp.model.po.bill.Module">
+    update module set active_state = 0 where class_id = #{classId} and type_id = #{typeId}
+  </update>
+
+    <insert id="insertModule" parameterType="com.yjp.erp.model.po.bill.Module">
+    insert into module (id, class_id, type_id,publish_state) values (#{id},#{classId},#{typeId},#{publishState})
+  </insert>
+
+    <update id="updateModule" parameterType="com.yjp.erp.model.po.bill.Module">
+    update module set gmt_modify = now(),publish_state = #{publishState},id = #{id}
+    where class_id = #{classId} and type_id = #{typeId} and active_state = 1
+  </update>
+
+    <update id="updateModuleAndActive" parameterType="com.yjp.erp.model.po.bill.Module">
+    update module set gmt_modify = now(),publish_state = #{publishState},id = #{id},active_state=#{activeState}
+    where class_id = #{classId} and type_id = #{typeId} and active_state = 1
+  </update>
+
+    <insert id="bathInsertModule" parameterType="com.yjp.erp.model.po.bill.Module">
+        insert into module (id, class_id, type_id,publish_state) values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id},#{item.classId},#{item.typeId},#{item.publishState})
+        </foreach>
+    </insert>
+
+    <update id="bathUpdateModule" parameterType="com.yjp.erp.model.po.bill.Module">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update module
+            <set>
+                gmt_modify = now(),publish_state = #{item.publishState},id = #{item.id}
+            </set>
+            where class_id = #{item.classId} and type_id = #{item.typeId} and active_state = 1
+        </foreach>
+    </update>
+
+    <update id="publishEntity" parameterType="com.yjp.erp.model.po.bill.Module">
+        update module set publish_state = 1 where class_id = #{classId} and type_id = #{typeId} and active_state = 1
+    </update>
+
+
+    <select id="typeIdCheck" parameterType="com.yjp.erp.model.po.bill.Module" resultType="int">
+        select count(1) from module where class_id = #{classId} and type_id = #{typeId} and active_state = 1 limit 1
+    </select>
+
+
+    <select id="getViewNameByClassIdAndTypeId" parameterType="com.yjp.erp.model.po.bill.Module" resultType="String">
+        select t2.entity_name from module t1 join view_parent t2 on t1.id = t2.module_id
+        where t1.class_id = #{classId} and t1.type_id = #{typeId} and t1.active_state = 1
+    </select>
+
+
+</mapper>

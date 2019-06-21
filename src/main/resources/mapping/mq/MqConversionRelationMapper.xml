@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjp.erp.mapper.mq.MqConversionRelationMapper">
+
+    <resultMap id="mqConversionRelationResultMap" type="com.yjp.erp.model.mq.MqConversionRelation">
+        <id column="id" property="id"/> 
+        <result column="mqId" property="mqId"/> 
+        <result column="sourceField" property="sourceField"/> 
+        <result column="targetField" property="targetField"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="mqConversionRelationColumns">
+        mq_conversion_relation.id AS "id",
+        mq_conversion_relation.mq_id AS "mqId",
+        mq_conversion_relation.source_field AS "sourceField",
+        mq_conversion_relation.target_field AS "targetField"
+    </sql>
+
+
+    <select id="get" resultMap="mqConversionRelationResultMap">
+        SELECT
+        <include refid="mqConversionRelationColumns" />
+        FROM mq_conversion_relation
+        <where>
+        mq_conversion_relation.id = #{id}
+        </where>
+    </select>
+
+    <select id="findList" resultMap="mqConversionRelationResultMap">
+        SELECT
+        <include refid="mqConversionRelationColumns" />
+        FROM mq_conversion_relation
+    </select>
+
+    <select id="findAllList" resultMap="mqConversionRelationResultMap">
+        SELECT
+        <include refid="mqConversionRelationColumns" />
+        FROM mq_conversion_relation
+    </select>
+
+    <insert id="insert">
+        INSERT INTO mq_conversion_relation(
+            id,
+            mq_id,
+            source_field,
+            target_field
+        )
+        VALUES (
+            #{id},
+            #{mqId},
+            #{sourceField},
+            #{targetField}
+        )
+    </insert>
+
+    <insert id="insertBatch">
+        INSERT INTO mq_conversion_relation(
+            id,
+            mq_id,
+            source_field,
+            target_field
+        )
+        VALUES
+        <foreach collection ="list" item="mqConversionRelation" separator =",">
+        (
+            #{mqConversionRelation.id},
+            #{mqConversionRelation.mqId},
+            #{mqConversionRelation.sourceField},
+            #{mqConversionRelation.targetField}
+        )
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE mq_conversion_relation SET
+        id = #{id},
+        mq_id = #{mqId},
+        source_field = #{sourceField},
+        target_field = #{targetField}
+        WHERE id = #{id}
+    </update>
+
+    <update id="bathUpdate">
+        <foreach collection="list" item="item" separator =",">
+            update mq_conversion_relation
+            <set>
+                id = #{item.id},
+                mq_id = #{item.mqId},
+                source_field = #{item.sourceField},
+                target_field = #{item.targetField}
+            </set>
+            where id = #{item.id}
+        </foreach>
+    </update>
+
+
+    <update id="delete">
+        DELETE FROM mq_conversion_relation
+        WHERE mq_id = #{id}
+    </update>
+
+
+
+</mapper>

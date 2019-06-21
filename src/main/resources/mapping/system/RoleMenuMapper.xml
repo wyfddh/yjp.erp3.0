@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.system.RoleMenuMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.system.RoleMenu">
+        <id property="id" column="id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="menuId" column="menu_id"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+      id,role_id,menu_id
+    </sql>
+    <select id="listRoleMenuDOByRole" resultType="com.yjp.erp.model.domain.RoleMenuDO" parameterType="java.util.List">
+      select a.role_id as roleId,a.menu_id as menuId,b.title as menuName, b.node_type as menuNoteType,b.parent_id as parentId
+      from role_menu a
+      left join menu b on a.menu_id = b.id
+      where b.status in (0,1)
+      and a.role_id in
+      (
+        <foreach collection="list" item="item" separator=",">
+          #{item.id}
+        </foreach>
+      )
+    </select>
+
+
+    <insert id="insertList" parameterType="java.util.List">
+      insert into role_menu
+      (id,role_id,menu_id)
+      VALUES
+      <foreach collection="list" item="item" separator=",">
+        (#{item.id},#{item.roleId},#{item.menuId})
+      </foreach>
+    </insert>
+    <delete id="deleteMenuByRole" parameterType="com.yjp.erp.model.po.system.Role">
+      delete from role_menu
+      where role_id = #{id}
+    </delete>
+</mapper>

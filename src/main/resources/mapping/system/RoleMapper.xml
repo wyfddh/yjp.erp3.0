@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yjp.erp.mapper.system.RoleMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjp.erp.model.po.system.Role">
+        <id property="id" column="id"/>
+        <result property="role" column="role"/>
+        <result property="description" column="description"/>
+        <result property="status" column="status"/>
+        <result property="createDate" column="create_date"/>
+        <result property="creator" column="creator"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="updater" column="updater"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+      id,role,description,status,create_date,creator,update_date,updater
+    </sql>
+    <select id="listRolesByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      select
+      a.id,a.role,a.description,a.status,a.create_date,a.creator,a.update_date,a.updater
+      from role a
+      left join user_role b on a.id = b.role_id
+      where b.user_id = #{userId}
+      and a.status = 1
+      order by a.update_date desc
+    </select>
+
+    <select id="listRoleByMenuId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+      select a.id
+      from role a
+      left join role_menu b on a.id = b.role_id
+      left join menu c on b.menu_id = c.id
+      where c.id = #{menuId}
+      and a.status = 1
+      order by a.update_date desc
+    </select>
+
+    <select id="listAllRoles" resultMap="BaseResultMap" parameterType="java.util.Map">
+      select
+      <include refid="Base_Column_List"/>
+      from role
+      where status in (0,1)
+      <if test="role != null and role != ''">
+        and role like concat('%',#{role},'%')
+      </if>
+      order by update_date desc
+      limit #{start},#{end}
+    </select>
+    <select id="countAllRoles" resultType="java.lang.Integer">
+      select count(1)
+      from role
+      where status in (0,1)
+    </select>
+    <select id="countRolesByMap" resultType="java.lang.Integer" parameterType="java.util.Map">
+      select count(1)
+      from role
+      where status in (0,1)
+      <if test="role != null and role != ''">
+        and role like concat('%',#{role},'%')
+      </if>
+    </select>
+    <select id="getRoleByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+      select
+      <include refid="Base_Column_List"/>
+      from role
+      where role = #{roleName}
+      and status in (0,1)
+      order by update_date desc
+    </select>
+    <select id="checkRole" resultType="java.lang.Integer" parameterType="com.yjp.erp.model.po.system.Role">
+      select count(1)
+      from role
+      where role = #{role}
+      and id <![CDATA[<>]]> #{id}
+      and status in (0,1)
+      order by update_date desc
+    </select>
+    <insert id="insertRole" parameterType="com.yjp.erp.model.po.system.Role">
+      insert into role
+      (id,role,description,status,create_date,creator,update_date,updater)
+      VALUES
+      (#{id},#{role},#{description},#{status},#{createDate},#{creator},#{updateDate},#{updater})
+    </insert>
+    <update id="updateRole" parameterType="com.yjp.erp.model.po.system.Role">
+      update role
+      <set>
+        <if test="role != null and role != ''">
+          role = #{role},
+        </if>
+        <if test="1 == 1">
+          description = #{description},
+        </if>
+        <if test="status != null">
+          status = #{status},
+        </if>
+        <if test="createDate != null">
+          create_date = #{createDate},
+        </if>
+        <if test="creator != null">
+          creator = #{creator},
+        </if>
+        <if test="updateDate != null">
+          update_date = #{updateDate},
+        </if>
+        <if test="updater != null">
+          updater = #{updater},
+        </if>
+      </set>
+      where id = #{id}
+    </update>
+</mapper>
